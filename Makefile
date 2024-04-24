@@ -5,6 +5,6 @@ checkCert:
 upEKM:
 	docker-compose up setup es01 kibana metricbeat01 -d
 upE:
-	docker-compose -f docker-compose-es.yml up es01 -d
+	docker-compose -f docker-compose-es.yml up -d
 downE:
 	docker-compose -f docker-compose-es.yml down -v
