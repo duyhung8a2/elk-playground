@@ -4,3 +4,5 @@ checkCert:
 	curl --cacert ./tmp/ca.crt -u elastic:password https://localhost:9200
 upEKM:
 	docker-compose up setup es01 kibana metricbeat01 -d
+upE:
+	docker-compose up setup es01 -d
