@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "load": "tsx initES.ts"
+    "load": "tsx scripts/initES.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@elastic/elasticsearch": "^8.13.1",
+    "radash": "^12.1.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
