@@ -1,6 +1,6 @@
 ES_HOST ?= localhost
 ES_PORT ?= 9200
-ES_RETRY_INTERVAL ?= 5
+ES_RETRY_INTERVAL ?= 3
 
 .PHONY: copyCert checkCert upEKM upE downE loadE resetE
 
