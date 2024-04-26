@@ -19,84 +19,67 @@ const userJsonData = readFileSync("dataset/users.json", "utf-8");
 const users: User[] = JSON.parse(userJsonData);
 let usersLength = users.length;
 
-async function indexPosts(
-  indexName = POSTS_INDEX_NAME,
-  itemPerBulk = ITEM_PER_BULK,
-  itemsLength = postsLength
-) {
-  console.log("Ready to index");
-  console.time("index-post");
+const index = async (
+  indexName: string,
+  itemPerBulk: number,
+  itemsLength: number,
+  items: any[],
+  take: string[]
+) => {
+  console.log(`Ready to index ${indexName}`, {
+    indexName,
+    itemPerBulk,
+    itemsLength,
+    take,
+  });
+  console.time(`index-${indexName}`);
   let bulkBody: any[] = [];
 
-  for (const post of posts) {
-    const doc = pick(post, ["id", "title", "content"]);
+  for (const item of items) {
+    const doc = pick(item, take as any[]);
 
     bulkBody.push({
-      index: { _index: indexName, _id: post.id.toString() },
+      index: { _index: indexName, _id: item.id.toString() },
     });
     bulkBody.push(doc);
 
     if (bulkBody.length > itemPerBulk * 2) {
-      console.log("Records left: ", itemsLength);
+      console.log(`${indexName} records left: `, itemsLength);
       await client.bulk({ operations: bulkBody, refresh: false });
       itemsLength -= bulkBody.length / 2;
       bulkBody = [];
     }
   }
   if (bulkBody.length > 0) {
-    console.log("Records left: ", itemsLength);
+    console.log(`${indexName} records left: `, itemsLength);
     await client.bulk({ body: bulkBody });
   }
-  console.timeEnd("index-post");
-
+  console.timeEnd(`index-${indexName}`);
   await client.indices.refresh({ index: indexName });
-}
+};
 
-async function indexUsers(
-  indexName = USERS_INDEX_NAME,
-  itemPerBulk = ITEM_PER_BULK,
-  itemsLength = usersLength
-) {
-  console.time("index-user");
-  let bulkBody: any[] = [];
-
-  for (const user of users) {
-    const doc = pick(user, ["id", "name", "phone", "email"]);
-    console.log(doc);
-
-    bulkBody.push({
-      index: { _index: indexName, _id: user.id.toString() },
-    });
-    bulkBody.push(doc);
-
-    if (bulkBody.length > itemPerBulk * 2) {
-      console.log("Records left: ", itemsLength);
-      await client.bulk({ operations: bulkBody, refresh: false });
-      itemsLength -= bulkBody.length / 2;
-      bulkBody = [];
-    }
+const runIndex = async (index: () => Promise<void>) => {
+  try {
+    await index();
+    console.log("Indexed successfully");
+  } catch (error) {
+    console.error("Error indexing:", error);
   }
-  if (bulkBody.length > 0) {
-    console.log("Records left: ", itemsLength);
-    await client.bulk({ body: bulkBody });
-  }
-  console.timeEnd("index-user");
+};
 
-  await client.indices.refresh({ index: indexName });
-}
+runIndex(() =>
+  index(POSTS_INDEX_NAME, ITEM_PER_BULK, postsLength, posts, [
+    "id",
+    "title",
+    "content",
+  ])
+);
 
-indexPosts()
-  .then(() => {
-    console.log("Posts indexed successfully");
-  })
-  .catch((error) => {
-    console.error("Error indexing posts:", error);
-  });
-
-indexUsers()
-  .then(() => {
-    console.log("Users indexed successfully");
-  })
-  .catch((error) => {
-    console.error("Error indexing users:", error);
-  });
+runIndex(() =>
+  index(USERS_INDEX_NAME, ITEM_PER_BULK, usersLength, users, [
+    "id",
+    "name",
+    "phone",
+    "email",
+  ])
+);

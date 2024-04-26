@@ -20,7 +20,7 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
-    mem_limit: 512000000
+    mem_limit: 2147483648 
     ulimits:
       memlock:
         soft: -1
