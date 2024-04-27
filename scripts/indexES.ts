@@ -3,7 +3,7 @@ import { pick } from "radash";
 import { client } from "./initES";
 import { Post, User } from "./types";
 
-const ITEM_PER_BULK = 5000;
+const ITEM_PER_BULK = 2000;
 const POSTS_INDEX_NAME = "post";
 const USERS_INDEX_NAME = "user";
 
@@ -34,6 +34,7 @@ export const indexUsers = async (
       properties: {
         name: {
           type: "text",
+          analyzer: "standard",
           fields: {
             completion: {
               type: "completion",

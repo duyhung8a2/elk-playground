@@ -34,6 +34,10 @@ wipeE:
 		echo "URL: http://${ES_HOST}:${ES_PORT}/$$trimmed_index";\
     	curl -XDELETE "http://${ES_HOST}:${ES_PORT}/$$trimmed_index" >/dev/null;\
 	done
+	
 loadE: checkE
 	npm run load
+
 resetE: wipeE loadE
+
+fullResetE: downE upE loadE
