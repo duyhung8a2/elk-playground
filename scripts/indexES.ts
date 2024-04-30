@@ -57,12 +57,17 @@ export const indexUsers = async (
   let bulkBody: any[] = [];
 
   for (const item of items) {
-    const doc = pick(item, ["id", "name", "phone", "email"]);
+    const baseDocument = pick(item, ["id", "name", "phone", "email"]);
+
+    const document = {
+      ...baseDocument,
+      access_count: 0,
+    };
 
     bulkBody.push({
       index: { _index: indexName, _id: item.id.toString() },
     });
-    bulkBody.push(doc);
+    bulkBody.push(document);
 
     if (bulkBody.length > itemPerBulk * 2) {
       console.log(`${indexName} records left: `, itemsLength);
@@ -116,12 +121,16 @@ export const indexPosts = async (
   let bulkBody: any[] = [];
 
   for (const item of items) {
-    const doc = pick(item, ["id", "title", "content"]);
+    const baseDocument = pick(item, ["id", "title", "content"]);
+    const document = {
+      ...baseDocument,
+      access_count: 0,
+    };
 
     bulkBody.push({
       index: { _index: indexName, _id: item.id.toString() },
     });
-    bulkBody.push(doc);
+    bulkBody.push(document);
 
     if (bulkBody.length > itemPerBulk * 2) {
       console.log(`${indexName} records left: `, itemsLength);
